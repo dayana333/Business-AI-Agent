@@ -1,0 +1,8 @@
+.env
+data/.env
+reports/*.md
+__pycache__/
+
+tools/chromedriver
+
+.pytest_cache/

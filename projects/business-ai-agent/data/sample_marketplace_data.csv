@@ -1,0 +1,9 @@
+marketplace,product_id,brand,model,title,price_kzt,rating,reviews_count,url,observed_at,notes
+kaspi,K1,Xiaomi,Redmi Buds 6,[SAMPLE] Xiaomi Redmi Buds 6,18990,4.7,412,https://example.com/sample/kaspi/1,2026-10-25,fake demo row
+kaspi,K2,Xiaomi,Redmi Buds 6,[SAMPLE] Xiaomi Redmi Buds 6 (Black),18490,4.6,208,https://example.com/sample/kaspi/2,2026-10-25,fake demo row
+kaspi,K3,Xiaomi,Redmi Buds 6,[SAMPLE] Xiaomi Redmi Buds 6,14990,4.8,1532,https://example.com/sample/kaspi/3,2026-10-25,fake demo row
+kaspi,K4,Xiaomi,Redmi Buds 6,[SAMPLE] Xiaomi Redmi Buds 6 Global,15490,4.7,864,https://example.com/sample/kaspi/4,2026-10-25,fake demo row
+kaspi,K5,Xiaomi,Redmi Buds 6,[SAMPLE] Xiaomi Redmi Buds 6,15890,4.9,2033,https://example.com/sample/kaspi/5,2026-10-25,fake demo row
+kaspi,K6,Xiaomi,Redmi Buds 6,[SAMPLE] Наушники Xiaomi Redmi Buds 6,16200,4.6,517,https://example.com/sample/kaspi/6,2026-10-25,fake demo row
+kaspi,K7,Xiaomi,Redmi Buds 6 Play,[SAMPLE] Xiaomi Redmi Buds 6 Play,8990,4.5,2210,https://example.com/sample/kaspi/7,2026-10-25,fake demo row
+kaspi,K8,Xiaomi,Redmi Buds 6 Play,[SAMPLE] Xiaomi Redmi Buds 6 Play,9450,4.4,1180,https://example.com/sample/kaspi/8,2026-10-25,fake demo row

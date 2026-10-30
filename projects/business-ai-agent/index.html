@@ -1,0 +1,1871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market Research — Kaspi</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2433; --muted:#5d6b82; --line:#e3e7ee;
+          --ok:#0f7b4f; --warn:#a35b00; --bad:#b42318; --accent:#2457d6; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif;
+         background:var(--bg); color:var(--ink); }
+  header { background:#101a2e; color:#fff; padding:22px 18px; }
+  header h1 { margin:0 0 4px; font-size:22px; }
+  header p { margin:0; color:#c6d0e2; font-size:13px; }
+  main { max-width:1080px; margin:0 auto; padding:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px;
+          padding:16px; margin-bottom:14px; }
+  form { display:flex; gap:8px; flex-wrap:wrap; }
+  input[type=text] { flex:1 1 320px; padding:12px 14px; font-size:16px;
+          border:1px solid #c8d0dd; border-radius:9px; }
+  button { padding:12px 20px; font-size:16px; border:0; border-radius:9px;
+           background:var(--accent); color:#fff; cursor:pointer; }
+  button:disabled { opacity:.55; cursor:wait; }
+  .hint { color:var(--muted); font-size:13px; margin-top:8px; }
+  .status { display:flex; gap:8px; flex-wrap:wrap; }
+  .badge { border:1px solid var(--line); border-radius:999px; padding:4px 11px;
+           font-size:13px; background:#fbfcfe; }
+  .badge b { font-weight:600; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%;
+         margin-right:6px; background:#98a2b3; }
+  .dot.ok { background:var(--ok); } .dot.bad { background:var(--bad); }
+  .dot.warn { background:var(--warn); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  .stat { background:#fbfcfe; border:1px solid var(--line); border-radius:9px; padding:10px 12px; }
+  .stat span { display:block; color:var(--muted); font-size:12px; }
+  .stat b { font-size:19px; }
+  .picks { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:12px; }
+  .pick { border:1px solid var(--line); border-radius:12px; padding:14px; background:#fff; }
+  .pick h3 { margin:0 0 2px; font-size:15px; color:var(--accent); text-transform:uppercase;
+             letter-spacing:.04em; }
+  .pick .name { font-weight:600; margin:6px 0; }
+  .pick .price { font-size:22px; font-weight:700; }
+  .pick ul { margin:8px 0 0; padding-left:18px; }
+  .pick li { margin:2px 0; }
+  .pick .muted { color:var(--muted); font-size:13px; }
+  .pick a { color:var(--accent); word-break:break-all; font-size:13px; }
+  .pick .why { font-size:13px; color:var(--muted); margin-top:8px; }
+  .review-quote { border-left:3px solid #c9d5f5; background:#f7f9fe; padding:8px 10px;
+                  margin:8px 0 0; font-size:13px; color:#33415c; }
+  .review-quote b { color:var(--ink); }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; }
+  td.num { white-space:nowrap; }
+  .empty { color:var(--muted); }
+  .error { color:var(--bad); white-space:pre-wrap; }
+  .note { background:#fff8e6; border:1px solid #f0dca8; border-radius:9px; padding:10px 12px;
+          font-size:13px; color:#5c4708; }
+  .steps { margin:8px 0 12px; padding-left:22px; }
+  .steps li { margin:5px 0; }
+  .sources { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-top:12px; }
+  .source { border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fbfcfe; }
+  .source.none { border-color:#f0dca8; background:#fff8e6; }
+  .source h3 { margin:0 0 4px; font-size:14px; }
+  .source p { margin:0; font-size:13px; color:var(--muted); }
+  .source a { font-size:13px; }
+  .secondary { background:#eef2fb; color:var(--accent); border:1px solid #c9d5f5;
+               padding:8px 12px; font-size:14px; }
+  .brief-head { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+  .brief-head h2 { margin:0; font-size:17px; }
+  .checks { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:8px; margin:12px 0; }
+  .check { border:1px solid var(--line); border-radius:9px; padding:9px 11px; font-size:13px; background:#fbfcfe; }
+  .check b { display:block; margin-bottom:2px; }
+  .check.ok { border-color:#b7dfc6; background:#f1fbf4; }
+  .check.bad { border-color:#f0dca8; background:#fff8e6; }
+  .brief-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-top:12px; }
+  .brief { border-top:1px solid var(--line); padding-top:12px; }
+  .brief.wide { grid-column:1/-1; border-top:0; padding-top:0; }
+  .brief h3 { margin:0 0 6px; font-size:14px; color:var(--accent); text-transform:uppercase; letter-spacing:.04em; }
+  .brief ul { margin:0; padding-left:18px; }
+  .brief li { margin:5px 0; font-size:14px; }
+  .readiness { font-size:14px; margin:8px 0 0; }
+  .spinner { width:16px; height:16px; border:2px solid #c8d0dd; border-top-color:var(--accent);
+             border-radius:50%; display:inline-block; animation:spin .8s linear infinite;
+             vertical-align:-3px; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+</style>
+<style id="dashboard-theme">
+  :root {
+    --bg:#08060c; --bg-soft:#0e0a13; --panel:#15101b; --panel-2:#1b1422;
+    --panel-3:#21182a; --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.16);
+    --ink:#f6f1f8; --muted:#a89caf; --muted-2:#7d7186;
+    --accent:#d7a1f5; --accent-2:#b76ee0; --accent-soft:rgba(215,161,245,.12);
+    --ok:#69d9a8; --bad:#ff8a9a; --warn:#f4c76b;
+    --shadow:0 24px 80px rgba(0,0,0,.45); --radius:18px;
+  }
+  html { scroll-behavior:smooth; }
+  body {
+    background:
+      radial-gradient(circle at 18% -10%, rgba(134,77,168,.14), transparent 32%),
+      radial-gradient(circle at 100% 20%, rgba(95,54,124,.10), transparent 30%),
+      var(--bg);
+    color:var(--ink); font:14.5px/1.55 Inter,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    min-height:100vh;
+  }
+  body::before {
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.18; z-index:-1;
+    background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:64px 64px; mask-image:linear-gradient(to bottom, #000, transparent 70%);
+  }
+  a { color:var(--accent); }
+  .app-shell { display:grid; grid-template-columns:248px minmax(0,1fr); min-height:100vh; }
+  .sidebar {
+    position:sticky; top:0; height:100vh; padding:26px 18px 20px; display:flex;
+    flex-direction:column; gap:24px; overflow:auto;
+    background:linear-gradient(180deg, #0d0912 0%, #0a0710 100%);
+    border-right:1px solid var(--line);
+  }
+  .brand { display:flex; align-items:center; gap:11px; color:var(--ink); text-decoration:none; }
+  .brand-mark {
+    width:36px; height:36px; border-radius:12px; display:grid; place-items:center;
+    background:linear-gradient(145deg, rgba(215,161,245,.22), rgba(183,110,224,.06));
+    border:1px solid rgba(215,161,245,.24); color:var(--accent);
+    box-shadow:0 0 24px rgba(183,110,224,.15);
+  }
+  .brand-mark svg { width:20px; height:20px; }
+  .brand-copy strong { display:block; font-size:15.5px; font-weight:600; letter-spacing:-.01em; }
+  .brand-copy small { display:block; color:var(--muted-2); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; margin-top:1px; }
+  .nav { display:flex; flex-direction:column; gap:4px; }
+  .nav a {
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:11px;
+    color:var(--muted); font-size:13.5px; text-decoration:none; border:1px solid transparent;
+    transition:background .18s, color .18s, border-color .18s;
+  }
+  .nav a svg { width:17px; height:17px; flex:0 0 auto; }
+  .nav a:hover { color:var(--ink); background:rgba(255,255,255,.04); }
+  .nav a.active {
+    color:var(--ink); border-color:rgba(215,161,245,.18);
+    background:linear-gradient(90deg, rgba(215,161,245,.16), rgba(215,161,245,.03));
+  }
+  .sidebar-label {
+    margin:0 0 7px; padding:0 12px; color:var(--muted-2); font-size:9.5px;
+    letter-spacing:.12em; text-transform:uppercase;
+  }
+  .sidebar-links { display:flex; flex-direction:column; gap:2px; }
+  .sidebar-links a {
+    padding:7px 12px; color:var(--muted); font-size:12.5px; text-decoration:none;
+    border-radius:8px;
+  }
+  .sidebar-links a:hover { color:var(--ink); background:rgba(255,255,255,.03); }
+  .side-note {
+    margin-top:auto; padding:15px; border:1px solid var(--line); border-radius:15px;
+    background:linear-gradient(145deg, rgba(215,161,245,.10), rgba(255,255,255,.02));
+  }
+  .side-note svg { width:18px; height:18px; color:var(--accent); margin-bottom:8px; }
+  .side-note strong { display:block; font-size:12.5px; margin-bottom:4px; }
+  .side-note p { margin:0; color:var(--muted); font-size:11.5px; line-height:1.5; }
+  .workspace { min-width:0; }
+  .topbar {
+    position:sticky; top:0; z-index:20; height:64px; padding:0 32px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    background:rgba(8,6,12,.82); border-bottom:1px solid var(--line);
+    backdrop-filter:blur(16px);
+  }
+  .crumb { color:var(--muted-2); font-size:12px; letter-spacing:.02em; }
+  .crumb span { margin:0 8px; opacity:.6; }
+  .crumb b { color:var(--ink); font-weight:500; }
+  .topbar-meta { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:11.5px; }
+  .pulse {
+    width:7px; height:7px; border-radius:50%; background:var(--ok);
+    box-shadow:0 0 0 4px rgba(105,217,168,.12);
+  }
+  .content { max-width:1360px; margin:0 auto; padding:28px 32px 64px; }
+  .eyebrow {
+    margin:0 0 6px; color:var(--accent); font-size:9.5px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+  }
+  .hero {
+    position:relative; overflow:hidden; min-height:340px; padding:46px;
+    display:grid; grid-template-columns:minmax(0,1fr) 278px; gap:36px; align-items:center;
+    border:1px solid var(--line); border-radius:26px; box-shadow:var(--shadow);
+    background:
+      radial-gradient(circle at 88% 12%, rgba(215,161,245,.22), transparent 34%),
+      radial-gradient(circle at 64% 100%, rgba(131,76,170,.18), transparent 42%),
+      linear-gradient(135deg, #1b1222 0%, #100b16 58%, #0d0912 100%);
+  }
+  .hero::before {
+    content:""; position:absolute; width:420px; height:420px; right:-140px; top:-180px;
+    border:1px solid rgba(255,255,255,.08); border-radius:50%;
+    box-shadow:0 0 0 50px rgba(255,255,255,.018), 0 0 0 110px rgba(255,255,255,.012);
+  }
+  .hero::after {
+    content:""; position:absolute; left:44px; right:44px; bottom:0; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(215,161,245,.5), transparent);
+    opacity:.55;
+  }
+  .hero-copy { position:relative; z-index:1; }
+  .hero h1 {
+    font-family:Georgia,"Times New Roman",serif; font-weight:400;
+    font-size:clamp(38px,4.4vw,62px); line-height:1.04; letter-spacing:-.035em;
+    margin:8px 0 17px; max-width:760px;
+  }
+  .hero h1 em {
+    font-style:italic;
+    background:linear-gradient(90deg, #f1d9ff 0%, #d7a1f5 55%, #b76ee0 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub { max-width:650px; margin:0 0 24px; color:var(--muted); font-size:15px; line-height:1.65; }
+  .search-box {
+    display:flex; align-items:center; gap:8px; max-width:760px; padding:8px;
+    border:1px solid rgba(255,255,255,.14); border-radius:16px;
+    background:rgba(255,255,255,.055); box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter:blur(12px);
+  }
+  .search-icon { display:grid; place-items:center; padding-left:8px; color:var(--muted); }
+  .search-icon svg { width:18px; height:18px; }
+  .search-box input {
+    flex:1 1 auto; min-width:0; padding:12px 8px; border:0; outline:0;
+    background:transparent; color:var(--ink); font-size:15px;
+  }
+  .search-box input::placeholder { color:var(--muted-2); }
+  .search-box button { flex:0 0 auto; }
+  .hero-hint { max-width:720px; margin:11px 0 0; }
+  .example-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+  .chip {
+    padding:7px 11px; border:1px solid var(--line); border-radius:999px;
+    background:rgba(255,255,255,.035); color:var(--muted); font-size:11.5px;
+    cursor:pointer; transition:all .18s;
+  }
+  .chip:hover { color:var(--ink); border-color:rgba(215,161,245,.35); background:rgba(215,161,245,.09); }
+  .premium-strip { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
+  .premium-label { display:block; color:var(--muted-2); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+  .premium-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .premium-toggle { display:inline-flex; align-items:center; gap:7px; color:var(--ink); font-size:11.5px; cursor:pointer; user-select:none; }
+  .premium-toggle input { width:14px; height:14px; accent-color:var(--accent); cursor:pointer; }
+  .hero-side { position:relative; z-index:1; display:flex; flex-direction:column; gap:11px; }
+  .hero-stat {
+    padding:15px 16px; border:1px solid var(--line); border-radius:14px;
+    background:rgba(255,255,255,.035); backdrop-filter:blur(8px);
+  }
+  .hero-stat span { display:block; color:var(--muted-2); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; }
+  .hero-stat b { display:block; margin:3px 0 2px; font-family:Georgia,serif; font-size:28px; font-weight:400; }
+  .hero-stat small { display:block; color:var(--muted); font-size:11px; line-height:1.45; }
+  .feature-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:16px 0; }
+  .feature {
+    padding:18px; border:1px solid var(--line); border-radius:16px;
+    background:linear-gradient(180deg, var(--panel), #110d16);
+  }
+  .feature-icon {
+    width:32px; height:32px; display:grid; place-items:center; margin-bottom:12px;
+    border-radius:10px; border:1px solid rgba(215,161,245,.18);
+    background:var(--accent-soft); color:var(--accent);
+  }
+  .feature-icon svg { width:16px; height:16px; }
+  .feature h3 { margin:0 0 5px; font-size:13px; font-weight:600; letter-spacing:-.01em; }
+  .feature p { margin:0; color:var(--muted); font-size:11.5px; line-height:1.5; }
+  .card {
+    position:relative; margin-bottom:16px; padding:20px; border:1px solid var(--line);
+    border-radius:var(--radius); background:linear-gradient(180deg, rgba(27,20,34,.9), rgba(19,14,24,.96));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  }
+  .section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
+  .section-head h2 { margin:0; font-family:Georgia,serif; font-size:24px; font-weight:400; letter-spacing:-.02em; }
+  .section-head p:not(.eyebrow) { margin:4px 0 0; color:var(--muted); font-size:12px; }
+  .section-note { color:var(--muted); font-size:12px; }
+  .status-pill {
+    display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px;
+    border:1px solid var(--line-strong); background:rgba(255,255,255,.04);
+    color:var(--muted); font-size:11px;
+  }
+  .status-pill.warn { border-color:rgba(244,199,107,.3); background:rgba(244,199,107,.08); color:var(--warn); }
+  .status-pill.ok { border-color:rgba(105,217,168,.3); background:rgba(105,217,168,.08); color:var(--ok); }
+  input[type=text] {
+    background:#0f0b13; border:1px solid var(--line-strong); color:var(--ink);
+    border-radius:10px; outline:0; transition:border-color .18s, box-shadow .18s;
+  }
+  input[type=text]:focus {
+    border-color:rgba(215,161,245,.55); box-shadow:0 0 0 3px rgba(215,161,245,.10);
+  }
+  button {
+    padding:11px 18px; border:1px solid transparent; border-radius:10px;
+    background:linear-gradient(135deg, #e4b8ff, #b76ee0); color:#1a1020;
+    font-size:13.5px; font-weight:600; cursor:pointer;
+    transition:transform .18s, box-shadow .18s, filter .18s;
+  }
+  button:hover { transform:translateY(-1px); box-shadow:0 10px 24px rgba(183,110,224,.22); filter:brightness(1.04); }
+  button:disabled { opacity:.55; cursor:wait; transform:none; box-shadow:none; }
+  .secondary {
+    padding:8px 12px; border:1px solid var(--line-strong); border-radius:9px;
+    background:rgba(255,255,255,.05); color:var(--ink); font-size:12.5px;
+  }
+  .secondary:hover { background:rgba(255,255,255,.08); box-shadow:none; }
+  .hint { color:var(--muted); font-size:12px; }
+  .note {
+    border:1px solid rgba(244,199,107,.24); border-radius:10px; padding:10px 12px;
+    background:rgba(244,199,107,.06); color:#e6cf9a; font-size:12px;
+  }
+  .status { display:flex; gap:8px; flex-wrap:wrap; }
+  .badge {
+    display:inline-flex; align-items:center; padding:5px 11px; border-radius:999px;
+    border:1px solid var(--line); background:rgba(255,255,255,.035);
+    color:var(--muted); font-size:11.5px;
+  }
+  .badge b { margin-right:4px; color:var(--ink); font-weight:500; }
+  .dot { width:7px; height:7px; border-radius:50%; margin-right:6px; background:var(--muted-2); }
+  .dot.ok { background:var(--ok); box-shadow:0 0 8px rgba(105,217,168,.5); }
+  .dot.bad { background:var(--bad); } .dot.warn { background:var(--warn); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:9px; }
+  .stat { padding:12px 13px; border:1px solid var(--line); border-radius:12px; background:#120e18; }
+  .stat span { display:block; color:var(--muted-2); font-size:10.5px; letter-spacing:.03em; }
+  .stat b { display:block; margin-top:2px; font-size:20px; font-weight:500; letter-spacing:-.02em; }
+  .range-viz { margin-top:14px; }
+  .range-track {
+    position:relative; height:8px; border-radius:999px;
+    background:linear-gradient(90deg, rgba(105,217,168,.65), rgba(215,161,245,.65), rgba(255,138,154,.65));
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.35);
+  }
+  .range-marker {
+    position:absolute; top:50%; width:11px; height:11px; border-radius:50%;
+    background:#fff; border:2px solid #1b1422; transform:translate(-50%,-50%);
+    box-shadow:0 0 0 3px rgba(255,255,255,.12);
+  }
+  .range-labels { display:flex; justify-content:space-between; gap:8px; margin-top:7px; color:var(--muted-2); font-size:10px; }
+  .range-labels b { display:block; color:var(--muted); font-size:10.5px; font-weight:500; }
+  .anomaly-box { margin-top:14px; padding:12px 13px; border:1px solid rgba(255,138,154,.28); border-radius:12px; background:rgba(255,138,154,.05); }
+  .anomaly-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .anomaly-head span:first-child { color:#ffb3be; font-size:10px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; }
+  .anomaly-box p { margin:5px 0 8px; color:var(--muted); font-size:11px; line-height:1.45; }
+  .anomaly-row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid rgba(255,138,154,.14); }
+  .anomaly-row:first-child { border-top:0; padding-top:2px; }
+  .anomaly-main { min-width:0; }
+  .anomaly-name { color:var(--ink); font-size:11.5px; line-height:1.35; text-decoration:none; }
+  .anomaly-name:hover { text-decoration:underline; }
+  .anomaly-reason { margin-top:2px; color:var(--muted-2); font-size:10px; line-height:1.4; }
+  .anomaly-price { flex:0 0 auto; color:#ffb3be; font-size:12px; font-weight:600; white-space:nowrap; }
+  .picks { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:12px; }
+  .pick {
+    position:relative; overflow:hidden; padding:18px; border:1px solid var(--line);
+    border-radius:16px; background:linear-gradient(180deg, #1c1424, #140f19);
+  }
+  .pick::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:var(--accent); }
+  .pick.tier-budget::before { background:linear-gradient(90deg, #69d9a8, transparent); }
+  .pick.tier-mid::before { background:linear-gradient(90deg, #8bb4ff, transparent); }
+  .pick.tier-premium::before { background:linear-gradient(90deg, #e0a1ff, transparent); }
+  .pick h3 {
+    margin:0 0 8px; color:var(--accent); font-size:9.5px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase;
+  }
+  .pick .name { min-height:38px; margin:0 0 5px; font-family:Georgia,serif; font-size:17.5px; line-height:1.3; }
+  .pick .price { margin:4px 0 2px; font-size:25px; font-weight:500; letter-spacing:-.03em; }
+  .pick .muted { color:var(--muted); font-size:11.5px; }
+  .pick ul { list-style:none; margin:10px 0 0; padding:0; }
+  .pick li { position:relative; margin:5px 0; padding-left:16px; color:var(--muted); font-size:11.5px; line-height:1.45; }
+  .pick li::before { content:"✓"; position:absolute; left:0; top:0; color:var(--ok); font-size:10px; }
+  .pick li.neg::before { content:"!"; color:var(--bad); font-weight:700; }
+  .pick a { display:inline-block; margin-top:10px; font-size:11.5px; word-break:break-all; }
+  .pick .why { margin-top:10px; color:var(--muted); font-size:11px; line-height:1.5; }
+  .review-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .tag {
+    display:inline-block; padding:3px 7px; border-radius:999px; border:1px solid var(--line);
+    background:rgba(255,255,255,.03); color:var(--muted); font-size:10px; line-height:1.3;
+  }
+  .tag.pos { border-color:rgba(105,217,168,.25); background:rgba(105,217,168,.07); color:#a7e8cb; }
+  .tag.neg { border-color:rgba(255,138,154,.25); background:rgba(255,138,154,.07); color:#ffb3be; }
+  .tag-label { display:block; margin-top:9px; color:var(--muted-2); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; }
+  .review-quote {
+    margin:9px 0 0; padding:8px 10px; border-left:2px solid rgba(215,161,245,.55);
+    background:rgba(255,255,255,.025); color:var(--muted); font-size:11px; line-height:1.5;
+    border-radius:0 8px 8px 0;
+  }
+  .review-quote b { color:var(--ink); font-weight:500; }
+  .sentiment { margin-top:12px; }
+  .sentiment-head { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:10.5px; }
+  .sentiment-track { display:flex; height:7px; margin:5px 0 4px; overflow:hidden; border-radius:999px; background:rgba(255,255,255,.08); }
+  .sentiment-fill.pos { background:linear-gradient(90deg, #3d9c74, #69d9a8); }
+  .sentiment-fill.neg { background:linear-gradient(90deg, #d16070, #ff8a9a); }
+  .sentiment-legend { display:flex; flex-wrap:wrap; gap:9px; color:var(--muted-2); font-size:9.5px; }
+  .sentiment-legend i { display:inline-block; width:6px; height:6px; margin-right:4px; border-radius:50%; background:var(--ok); }
+  .sentiment-legend .neg i { background:var(--bad); }
+  .feedback-products { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:10px; margin:0 0 14px; }
+  .feedback-product { display:flex; gap:10px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#120e18; min-width:0; }
+  .feedback-media { flex:0 0 76px; width:76px; height:76px; border-radius:9px; overflow:hidden; background:radial-gradient(circle at 50% 40%, #2a1e35, #0c0911); border:1px solid var(--line); }
+  .feedback-media img { width:100%; height:100%; object-fit:contain; padding:5px; display:block; }
+  .feedback-media .image-fallback { padding:5px; gap:4px; font-size:8.5px; }
+  .feedback-media .image-fallback svg { width:20px; height:20px; }
+  .feedback-body { min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .feedback-role { color:var(--accent); font-size:8.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+  .feedback-title { color:var(--ink); font-size:12px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .feedback-price { color:var(--ink); font-size:15px; font-weight:600; letter-spacing:-.02em; }
+  .feedback-meta { color:var(--muted); font-size:10px; }
+  .feedback-seller { color:var(--muted-2); font-size:9.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .improvements { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; }
+  .improvement { padding:13px 14px; border:1px solid var(--line); border-radius:12px; background:#120e18; }
+  .improvement .product { color:var(--muted-2); font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .improvement h3 { margin:4px 0 5px; font-size:13px; font-weight:600; }
+  .improvement p { margin:0; color:var(--muted); font-size:11.5px; line-height:1.45; }
+  .improvement .freq { display:inline-block; margin-top:7px; color:var(--bad); font-size:10.5px; }
+  .empty { color:var(--muted); font-size:12.5px; }
+  .sources { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:9px; margin-top:12px; }
+  .source { padding:11px 12px; border:1px solid var(--line); border-radius:11px; background:#120e18; }
+  .source.none { border-color:rgba(244,199,107,.24); background:rgba(244,199,107,.055); }
+  .source h3 { margin:0 0 3px; font-size:12.5px; font-weight:600; }
+  .source p { margin:0; color:var(--muted); font-size:11px; }
+  .source a { font-size:11px; }
+  .brief-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .brief-head h2 { margin:0; font-family:Georgia,serif; font-size:24px; font-weight:400; }
+  .checks { display:grid; grid-template-columns:repeat(auto-fit,minmax(205px,1fr)); gap:8px; margin:13px 0; }
+  .check { padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:#120e18; color:var(--muted); font-size:11px; line-height:1.45; }
+  .check b { display:block; margin-bottom:3px; color:var(--ink); font-size:11.5px; font-weight:500; }
+  .check.ok { border-color:rgba(105,217,168,.22); background:rgba(105,217,168,.055); }
+  .check.bad { border-color:rgba(244,199,107,.22); background:rgba(244,199,107,.055); }
+  .brief-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin-top:12px; }
+  .brief { border-top:1px solid var(--line); padding-top:12px; }
+  .brief.wide { grid-column:1/-1; border-top:0; padding-top:0; }
+  .brief h3 { margin:0 0 6px; color:var(--accent); font-size:9.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+  .brief ul { margin:0; padding-left:16px; }
+  .brief li { margin:5px 0; color:var(--muted); font-size:12px; line-height:1.5; }
+  .readiness { margin:8px 0 0; color:var(--muted); font-size:12px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th, td { padding:9px 7px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  th { color:var(--muted-2); font-size:9.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+  td { color:var(--muted); }
+  tbody tr:hover td { background:rgba(255,255,255,.018); }
+  td.num { white-space:nowrap; color:var(--ink); }
+  .table-wrap { overflow:auto; }
+  .error {
+    border:1px solid rgba(255,138,154,.3); border-radius:12px; padding:13px 15px;
+    background:rgba(255,138,154,.06); color:#ffb3be; font-size:12.5px; white-space:pre-wrap;
+  }
+  #error::before { content:"Analysis stopped"; display:block; margin-bottom:4px; color:var(--bad); font-weight:600; }
+  #error.info {
+    border-color:rgba(163,91,0,.28); background:rgba(163,91,0,.06); color:var(--ink);
+  }
+  #error.info::before { content:"No suitable products found"; color:var(--warn); }
+  #progress { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12.5px; }
+  #progress[hidden], #error[hidden] { display:none; }
+  .spinner {
+    width:16px; height:16px; border:2px solid rgba(255,255,255,.16); border-top-color:var(--accent);
+    border-radius:50%; display:inline-block; animation:spin .8s linear infinite;
+  }
+  .details-card { padding:0; overflow:hidden; }
+  .details-card summary {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:17px 20px; cursor:pointer; list-style:none; color:var(--ink); font-size:13px;
+  }
+  .details-card summary::-webkit-details-marker { display:none; }
+  .details-card summary::after { content:"+"; color:var(--muted); font-size:17px; font-weight:300; }
+  .details-card[open] summary::after { content:"−"; }
+  .details-card summary .summary-label { display:flex; flex-direction:column; gap:2px; }
+  .details-card summary small { color:var(--muted); font-size:11px; font-weight:400; }
+  .details-body { padding:0 20px 20px; }
+  .commands { margin:8px 0 10px; padding:11px 12px; border:1px solid var(--line); border-radius:10px;
+    background:#100c16; color:var(--ink-2); font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;
+    white-space:pre-wrap; overflow-wrap:anywhere; }
+  .commands b { color:var(--accent-2); font-weight:500; }
+  .grab-btn {
+    display:inline-block; padding:9px 13px; border:1px dashed rgba(215,161,245,.5);
+    border-radius:9px; color:var(--accent); font-size:12px; font-weight:600;
+    text-decoration:none; background:rgba(215,161,245,.06);
+  }
+  .grab-btn:hover { background:rgba(215,161,245,.12); }
+  .steps { margin:8px 0 8px; padding-left:19px; }
+  .steps li { margin:5px 0; color:var(--muted); font-size:11.5px; }
+  .footer { padding:14px 2px 0; color:var(--muted-2); font-size:10.5px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .footer b { color:var(--muted); font-weight:500; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @media (max-width:1120px) {
+    .hero { grid-template-columns:1fr; padding:38px; }
+    .hero-side { flex-direction:row; }
+    .hero-stat { flex:1; }
+    .feature-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+  @media (max-width:900px) {
+    .app-shell { display:block; }
+    .sidebar {
+      position:static; height:auto; padding:14px 18px; gap:14px; flex-direction:row;
+      align-items:center; overflow:auto; border-right:0; border-bottom:1px solid var(--line);
+    }
+    .brand-copy small, .sidebar-links, .side-note { display:none; }
+    .nav { flex-direction:row; gap:3px; margin-left:auto; }
+    .nav a { padding:8px 10px; white-space:nowrap; }
+    .nav a svg { display:none; }
+    .topbar { padding:0 20px; }
+    .content { padding:20px; }
+  }
+  @media (max-width:640px) {
+    .topbar { height:56px; }
+    .topbar-meta { display:none; }
+    .content { padding:14px; }
+    .hero { padding:28px 20px; border-radius:20px; }
+    .hero h1 { font-size:37px; }
+    .hero-side { flex-direction:column; }
+    .search-box { flex-wrap:wrap; }
+    .search-box button { width:100%; }
+    .feature-strip { grid-template-columns:1fr; }
+    .picks { grid-template-columns:1fr; }
+    .section-head h2, .brief-head h2 { font-size:21px; }
+    .card { padding:16px; }
+    .details-card { padding:0; }
+    .details-card summary, .details-body { padding-left:16px; padding-right:16px; }
+  }
+
+  /* UI v2: visual report */
+  .hero { min-height:300px; padding:40px; }
+  .hero h1 { font-size:clamp(34px,3.7vw,54px); max-width:720px; }
+  .hero-sub { font-size:14px; max-width:610px; }
+  .hero-hint { max-width:640px; }
+  .report-head {
+    padding:22px 24px;
+    background:linear-gradient(135deg, rgba(37,25,48,.92), rgba(18,13,24,.97));
+  }
+  .report-top { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+  .report-top h2 { margin:0; font-family:Georgia,serif; font-size:clamp(24px,2.6vw,34px); font-weight:400; letter-spacing:-.03em; }
+  .report-sub { margin:6px 0 0; color:var(--muted); font-size:12px; }
+  .report-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+  .kpi { padding:14px 15px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(180deg,#17111e,#110d16); }
+  .kpi span { display:block; color:var(--muted-2); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; }
+  .kpi b { display:block; margin:4px 0 1px; font-size:23px; font-weight:500; letter-spacing:-.03em; }
+  .kpi small { color:var(--muted); font-size:10.5px; }
+  .price-chart { display:flex; flex-direction:column; gap:6px; margin-top:16px; }
+  .price-row { display:grid; grid-template-columns:minmax(150px,1.5fr) minmax(120px,2.5fr) 86px; gap:12px; align-items:center; }
+  .price-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); font-size:11.5px; }
+  .price-track { height:10px; border-radius:999px; background:rgba(255,255,255,.055); overflow:hidden; }
+  .price-fill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, rgba(215,161,245,.5), var(--accent)); }
+  .price-row.tier-budget .price-fill { background:linear-gradient(90deg, rgba(105,217,168,.55), var(--ok)); }
+  .price-row.tier-mid .price-fill { background:linear-gradient(90deg, rgba(139,180,255,.5), #8bb4ff); }
+  .price-row.tier-premium .price-fill { background:linear-gradient(90deg, rgba(224,161,255,.45), #e0a1ff); }
+  .price-val { text-align:right; color:var(--ink); font-size:11.5px; white-space:nowrap; }
+  .tier-legend { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; color:var(--muted); font-size:10.5px; }
+  .tier-legend i { display:inline-block; width:8px; height:8px; margin-right:5px; border-radius:50%; }
+  .picks { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; }
+  .pick { padding:0; display:flex; flex-direction:column; }
+  .pick::before { height:3px; }
+  .pick-media { position:relative; height:190px; background:radial-gradient(circle at 50% 40%, #2a1e35, #0c0911); border-bottom:1px solid var(--line); overflow:hidden; }
+  .pick-media img { width:100%; height:100%; object-fit:contain; padding:16px; display:block; }
+  .image-fallback { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; color:var(--muted-2); font-size:10.5px; text-align:center; padding:16px; }
+  .image-fallback svg { width:28px; height:28px; opacity:.55; }
+  .pick-body { display:flex; flex-direction:column; gap:9px; padding:16px; flex:1; }
+  .pick-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pick-badge { display:inline-flex; padding:4px 8px; border-radius:999px; border:1px solid var(--line-strong); font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+  .tier-budget .pick-badge { color:var(--ok); border-color:rgba(105,217,168,.28); background:rgba(105,217,168,.07); }
+  .tier-mid .pick-badge { color:#a9c6ff; border-color:rgba(139,180,255,.28); background:rgba(139,180,255,.07); }
+  .tier-premium .pick-badge { color:#e7b9ff; border-color:rgba(224,161,255,.28); background:rgba(224,161,255,.07); }
+  .pick .name { min-height:0; margin:0; font-size:17px; line-height:1.35; }
+  .pick-price-row { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+  .pick .price { margin:0; font-size:26px; }
+  .market-tag { color:var(--muted); font-size:10px; text-transform:capitalize; }
+  .pick-stats { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:11px; }
+  .pick-stats b { color:var(--ink); font-weight:500; }
+  .spec-row { display:flex; flex-wrap:wrap; gap:5px; }
+  .spec { padding:3px 7px; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,.025); color:var(--muted); font-size:9.5px; }
+  .pros-cons { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
+  .pros-cons h4 { margin:0 0 3px; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-2); }
+  .pros-cons ul { margin:0; padding:0; list-style:none; }
+  .pros-cons li { position:relative; margin:3px 0; padding-left:11px; color:var(--muted); font-size:10.5px; line-height:1.4; }
+  .pros-cons li::before { content:"+"; position:absolute; left:0; color:var(--ok); }
+  .pros-cons .cons li::before { content:"!"; color:var(--bad); font-weight:700; }
+  .pick-actions { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:8px; padding-top:8px; border-top:1px solid var(--line); }
+  .pick-actions a { margin:0; font-size:11px; text-decoration:none; font-weight:600; }
+  .pick .why { margin:0; }
+  .pick-summary { margin:0; color:var(--ink); font-size:12px; line-height:1.5; }
+  .pick-more { margin-top:2px; border-top:1px solid var(--line); padding-top:9px; }
+  .pick-more summary { cursor:pointer; color:var(--muted); font-size:11px; list-style:none; display:flex; justify-content:space-between; gap:8px; }
+  .pick-more summary::-webkit-details-marker { display:none; }
+  .pick-more summary::after { content:"+"; color:var(--muted); font-size:14px; line-height:1; }
+  .pick-more[open] summary::after { content:"−"; }
+  .alt-options { display:flex; flex-direction:column; gap:7px; margin-top:9px; }
+  .alt-row { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding-top:7px; border-top:1px solid var(--line); }
+  .alt-title { color:var(--ink); font-size:11.5px; line-height:1.35; }
+  .alt-meta { color:var(--muted); font-size:10.5px; white-space:nowrap; }
+  .market-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .market-card { padding:15px; border:1px solid var(--line); border-radius:14px; background:#120e18; }
+  .market-card.is-winner { border-color:rgba(105,217,168,.36); background:linear-gradient(180deg, rgba(105,217,168,.075), #120e18); }
+  .market-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+  .market-head h3 { margin:0; font-size:13px; text-transform:capitalize; }
+  .market-status { font-size:9px; color:var(--muted); }
+  .market-status.ok { color:var(--ok); } .market-status.bad { color:var(--bad); }
+  .market-card p { margin:0; color:var(--muted); font-size:10.5px; line-height:1.45; }
+  .market-pick { margin-top:9px; padding-top:9px; border-top:1px solid var(--line); }
+  .market-pick b { display:block; color:var(--ink); font-size:11.5px; line-height:1.35; }
+  .market-pick span { display:block; margin-top:2px; color:var(--muted); font-size:10.5px; }
+  .market-pick a { display:inline-block; margin-top:5px; font-size:10.5px; }
+  .winner-banner { display:flex; align-items:center; gap:8px; margin-top:10px; padding:9px 12px; border:1px solid rgba(105,217,168,.22); border-radius:10px; background:rgba(105,217,168,.055); color:#b9efd6; font-size:11px; }
+  .cross-market { margin-top:12px; }
+  .insight-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .insight-card { padding:15px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(180deg,#17111e,#110d16); }
+  .insight-card span { display:block; color:var(--accent); font-size:9px; letter-spacing:.12em; text-transform:uppercase; }
+  .insight-card h3 { margin:5px 0 5px; font-size:14px; font-weight:500; line-height:1.35; }
+  .insight-card p { margin:0; color:var(--muted); font-size:11px; line-height:1.5; }
+  .thumb { width:36px; height:36px; object-fit:contain; border-radius:7px; background:#0d0912; border:1px solid var(--line); }
+  .offer-product { display:flex; align-items:center; gap:8px; min-width:180px; }
+  .compare-product { display:flex; align-items:center; gap:8px; }
+  .compare-product img, .compare-product .thumb { flex:0 0 auto; }
+  .tiny { color:var(--muted-2); font-size:9.5px; }
+  @media (max-width:1120px) {
+    .kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .picks, .market-grid, .insight-grid { grid-template-columns:1fr; }
+    .pick-media { height:220px; }
+  }
+  @media (max-width:760px) {
+    .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .price-row { grid-template-columns:minmax(100px,1fr) minmax(80px,1.5fr) 70px; }
+    .pros-cons { grid-template-columns:1fr; }
+    .report-actions { width:100%; }
+  }
+
+  .report-actions button { margin:0; }
+  .pick .name { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .review-tags { margin:0; }
+  .pick-body .sentiment { margin-top:2px; }
+  .market-card p { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+</style>
+<style id="platform-theme">
+  :root {
+    --charcoal:#09070b; --pink:#efb3d3; --pink-soft:rgba(239,179,211,.12);
+    --mauve:#d7a1f5; --violet:#b76ee0;
+  }
+  body {
+    background:
+      radial-gradient(ellipse at 12% -8%, rgba(151,91,187,.18), transparent 34%),
+      radial-gradient(ellipse at 92% 6%, rgba(239,179,211,.08), transparent 28%),
+      radial-gradient(ellipse at 70% 80%, rgba(103,57,132,.10), transparent 36%),
+      var(--charcoal);
+  }
+  .content { max-width:1320px; padding-top:24px; }
+  .hero {
+    min-height:392px; padding:48px 46px;
+    background:
+      radial-gradient(circle at 83% 16%, rgba(239,179,211,.16), transparent 28%),
+      radial-gradient(circle at 68% 105%, rgba(145,82,184,.22), transparent 40%),
+      linear-gradient(135deg, #1d1424 0%, #120d18 56%, #0b0810 100%);
+    border-color:rgba(239,179,211,.14);
+  }
+  .hero::before {
+    animation:orbit 22s linear infinite;
+    border-color:rgba(239,179,211,.10);
+  }
+  .hero::after { background:linear-gradient(90deg, transparent, rgba(239,179,211,.55), rgba(215,161,245,.35), transparent); }
+  .hero-copy > * { animation:rise .65s cubic-bezier(.2,.7,.2,1) both; }
+  .hero-copy > :nth-child(2) { animation-delay:.06s; }
+  .hero-copy > :nth-child(3) { animation-delay:.12s; }
+  .hero-copy > :nth-child(4) { animation-delay:.18s; }
+  .hero-copy > :nth-child(5) { animation-delay:.24s; }
+  .hero-side { animation:rise .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  .hero h1 em { background:linear-gradient(100deg, #ffe3f0 0%, var(--pink) 38%, var(--mauve) 78%, #a865d0 100%); -webkit-background-clip:text; background-clip:text; }
+  .hero-stat { border-color:rgba(239,179,211,.12); background:rgba(255,255,255,.042); transition:border-color .2s, background .2s, transform .2s; }
+  .hero-stat:hover { transform:translateY(-2px); border-color:rgba(239,179,211,.24); background:rgba(255,255,255,.06); }
+  .search-box { border-color:rgba(239,179,211,.18); box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 18px 48px rgba(0,0,0,.24); }
+  .search-box:focus-within { border-color:rgba(239,179,211,.42); box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 0 0 4px rgba(215,161,245,.08), 0 18px 48px rgba(0,0,0,.28); }
+  .search-box button { background:linear-gradient(135deg, #ffe2f0 0%, #efb3d3 36%, #c47fe8 100%); color:#211025; }
+  .trust-row { display:flex; flex-wrap:wrap; gap:7px; margin-top:13px; }
+  .trust-row span { display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:10.5px; }
+  .trust-row span::before { content:""; width:5px; height:5px; border-radius:50%; background:var(--ok); box-shadow:0 0 7px rgba(105,217,168,.55); }
+  .hero-hint { margin-top:9px; }
+  .feature-strip { grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:18px 0; }
+  .feature {
+    position:relative; overflow:hidden; padding:20px; min-height:148px;
+    border-color:rgba(239,179,211,.10);
+    background:linear-gradient(160deg, rgba(32,23,40,.88), rgba(16,11,21,.96));
+    transition:transform .22s, border-color .22s, box-shadow .22s;
+  }
+  .feature::after { content:""; position:absolute; inset:auto -30% -70% -30%; height:120px; background:radial-gradient(ellipse, rgba(215,161,245,.13), transparent 68%); opacity:0; transition:opacity .25s; }
+  .feature:hover { transform:translateY(-3px); border-color:rgba(239,179,211,.24); box-shadow:0 18px 42px rgba(0,0,0,.28); }
+  .feature:hover::after { opacity:1; }
+  .feature-icon { width:38px; height:38px; margin-bottom:14px; border-radius:12px; background:linear-gradient(145deg, rgba(239,179,211,.16), rgba(215,161,245,.05)); border-color:rgba(239,179,211,.20); }
+  .feature-icon svg { width:18px; height:18px; }
+  .feature h3 { margin:0 0 6px; font-size:13.5px; }
+  .feature p { font-size:11.5px; line-height:1.55; }
+  .feature .feature-tag { display:inline-block; margin-bottom:9px; color:var(--pink); font-size:8.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
+  .how-card { padding:30px 32px; background:linear-gradient(135deg, rgba(28,20,36,.86), rgba(14,10,19,.97)); }
+  .how-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr); gap:36px; align-items:start; }
+  .how-copy h2 { margin:0 0 8px; font-family:Georgia,serif; font-size:clamp(25px,2.5vw,33px); font-weight:400; letter-spacing:-.03em; }
+  .how-copy > p:not(.eyebrow) { margin:0; max-width:620px; color:var(--muted); font-size:13px; line-height:1.6; }
+  .how-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:22px; }
+  .how-step { position:relative; padding:16px 15px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.025); }
+  .how-step span { display:block; color:var(--pink); font-family:Georgia,serif; font-size:21px; line-height:1; margin-bottom:9px; }
+  .how-step b { display:block; margin-bottom:4px; font-size:12px; font-weight:600; }
+  .how-step p { margin:0; color:var(--muted); font-size:10.5px; line-height:1.5; }
+  .report-includes { padding:19px 20px; border:1px solid rgba(239,179,211,.16); border-radius:16px; background:linear-gradient(160deg, rgba(57,33,70,.45), rgba(20,14,26,.75)); }
+  .report-includes .eyebrow { color:var(--pink); }
+  .report-list { list-style:none; margin:10px 0 15px; padding:0; }
+  .report-list li { position:relative; margin:7px 0; padding-left:18px; color:var(--muted); font-size:11.5px; line-height:1.45; }
+  .report-list li::before { content:"✓"; position:absolute; left:0; top:0; color:var(--ok); font-size:10px; }
+  .report-list li.warn::before { content:"!"; color:var(--warn); font-weight:700; }
+  .live-badge { display:flex; align-items:center; gap:8px; padding:9px 11px; border:1px solid rgba(105,217,168,.22); border-radius:10px; background:rgba(105,217,168,.055); color:#b9efd6; font-size:10.5px; line-height:1.4; }
+  .live-badge i { flex:0 0 auto; width:7px; height:7px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px rgba(105,217,168,.6); }
+  section[id], details[id], form[id] { scroll-margin-top:84px; }
+  [data-reveal] { opacity:0; transform:translateY(14px); transition:opacity .55s ease, transform .55s ease; }
+  [data-reveal].is-visible { opacity:1; transform:none; }
+  .nav a[hidden] { display:none; }
+  .nav a.active { color:var(--ink); border-color:rgba(239,179,211,.20); background:linear-gradient(90deg, rgba(239,179,211,.16), rgba(215,161,245,.035)); }
+  .brand-mark { border-color:rgba(239,179,211,.26); color:var(--pink); }
+  .back-top { position:fixed; right:22px; bottom:22px; z-index:30; width:40px; height:40px; padding:0; display:grid; place-items:center; border-radius:50%; border:1px solid rgba(239,179,211,.24); background:rgba(24,16,30,.9); color:var(--pink); box-shadow:0 12px 30px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; }
+  .back-top.show { opacity:1; pointer-events:auto; }
+  .back-top:hover { transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.4); }
+  .back-top svg { width:17px; height:17px; }
+  @keyframes rise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes orbit { to { transform:rotate(360deg); } }
+  @media (max-width:1120px) {
+    .feature-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .how-grid { grid-template-columns:1fr; gap:24px; }
+  }
+  @media (max-width:760px) {
+    .sidebar { flex-wrap:wrap; overflow:visible; padding:14px 16px; gap:11px; }
+    .nav { width:100%; margin-left:0; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+    .nav::-webkit-scrollbar { display:none; }
+    .nav a { padding:7px 8px; font-size:12px; }
+    .topbar { height:52px; padding:0 16px; }
+    .crumb { font-size:11px; }
+    .hero { min-height:0; padding:32px 22px; }
+    .feature-strip { grid-template-columns:1fr; }
+    .feature { min-height:0; }
+    .how-card { padding:22px 18px; }
+    .how-steps { grid-template-columns:1fr; }
+    .back-top { right:14px; bottom:14px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    .hero-copy > *, .hero-side, [data-reveal] { animation:none !important; transition:none !important; opacity:1 !important; transform:none !important; }
+    .hero::before { animation:none; }
+  }
+</style>
+
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#top" aria-label="Business AI Agent home">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M12 2.8 14.1 9l6.2 2.1-6.2 2.1L12 19.4l-2.1-6.2L3.7 11l6.2-2.1L12 2.8Z"/>
+          <path d="M19 3.5v3M17.5 5h3"/>
+        </svg>
+      </span>
+      <span class="brand-copy"><strong>Business AI Agent</strong><small>Smarter decisions. Better business.</small></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="active" href="#top" data-nav="top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-8.5Z"/></svg>
+        Home
+      </a>
+      <a href="#search" data-nav="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg>
+        Market Analysis
+      </a>
+      <a href="#results" data-nav="results" id="nav-results" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l3 3v15H6V3Z"/><path d="M9 11h6M9 15h6M9 7h3"/></svg>
+        Report
+      </a>
+      <a href="#how" data-nav="how">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1m-8.6 8.6-2.1 2.1"/><circle cx="12" cy="12" r="3.4"/></svg>
+        How it works
+      </a>
+    </nav>
+    <div class="sidebar-links">
+      <p class="sidebar-label">Quick links</p>
+      <a href="#coverage-facts">Live coverage</a>
+      <a href="#report-contents">Report contents</a>
+    </div>
+    <div class="side-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <strong>Transparent by design</strong>
+      <p>Live Kaspi data only. Missing data stays missing — never invented.</p>
+    </div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <div class="crumb">Workspace <span>/</span> <b>Market intelligence</b></div>
+      <div class="topbar-meta"><span class="pulse"></span> Kaspi live · public search</div>
+    </header>
+    <main id="top" class="content">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">AI market intelligence</p>
+          <h1>Know what to sell, <em>before you buy.</em></h1>
+          <p class="hero-sub">One search compares Kaspi offers, price levels and real customer reviews. Get three evidence-based picks and the next action to test.</p>
+          <form id="search" class="search-box">
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            </span>
+            <input id="query" type="text" placeholder="Enter a product, e.g. hair claw clip…" autocomplete="off" maxlength="120" aria-label="Product search query">
+            <button id="run" type="submit">Analyze <span aria-hidden="true">→</span></button>
+          </form>
+          <div class="example-chips" aria-label="Example searches">
+            <button type="button" class="chip" data-query="заколка крабик для волос">hair claw clip</button>
+            <button type="button" class="chip" data-query="беспроводные наушники">wireless earbuds</button>
+            <button type="button" class="chip" data-query="кастрюля">cooking pots</button>
+            <button type="button" class="chip" data-query="блеск для губ">lip gloss</button>
+          </div>
+          <div class="premium-strip" aria-label="High-price categories">
+            <div class="premium-head">
+              <span class="premium-label">High-price examples — any category works</span>
+              <label class="premium-toggle"><input type="checkbox" id="premium-only"> Show only the Best premium pick</label>
+            </div>
+            <div class="example-chips">
+              <button type="button" class="chip" data-query="смартфон" data-premium="1">Smartphones</button>
+              <button type="button" class="chip" data-query="игровой ноутбук" data-premium="1">Gaming laptops</button>
+              <button type="button" class="chip" data-query="смарт-часы" data-premium="1">Smart watches</button>
+              <button type="button" class="chip" data-query="стайлер для волос" data-premium="1">Hair stylers</button>
+              <button type="button" class="chip" data-query="серебряный браслет" data-premium="1">Silver jewelry</button>
+              <button type="button" class="chip" data-query="игровая приставка" data-premium="1">Game consoles</button>
+            </div>
+          </div>
+          <p class="hint hero-hint">Kaspi is searched live. No other marketplaces are mixed in, and nothing is invented.</p>
+          <div class="trust-row" aria-label="Platform principles">
+            <span>Public pages only</span><span>No login required</span><span>No invented data</span>
+          </div>
+        </div>
+        <aside class="hero-side" aria-label="Data coverage">
+          <div class="hero-stat"><span>Live source</span><b>Kaspi</b><small>Public search pages, normal browser read.</small></div>
+          <div class="hero-stat"><span>Scope</span><b>Kaspi only</b><small>One public source, checked live; missing data stays marked.</small></div>
+        </aside>
+      </section>
+
+      <section class="feature-strip" aria-label="Platform capabilities">
+        <article class="feature" data-reveal>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg>
+          </span>
+          <span class="feature-tag">Market intelligence</span>
+          <h3>Live market scan</h3>
+          <p>Kaspi offers, prices, ratings and review depth in one structured view — with missing data marked, not hidden.</p>
+        </article>
+        <article class="feature" data-reveal>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.2 8.2 0 0 1-3.2-.7L4 20l1.4-4.1A7.2 7.2 0 0 1 4.5 12 7.5 7.5 0 0 1 12 4.5a7.5 7.5 0 0 1 8 7Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>
+          </span>
+          <span class="feature-tag">Review intelligence</span>
+          <h3>Customer signals</h3>
+          <p>Visible review text grouped into positive themes and recurring complaints, with real quotes and sample sizes.</p>
+        </article>
+        <article class="feature" data-reveal>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/><path d="M19 4v3M17.5 5.5h3"/></svg>
+          </span>
+          <span class="feature-tag">Evidence-based picks</span>
+          <h3>Budget, mid-range, premium</h3>
+          <p>Three options ranked by price position, rating, review depth and seller signals — not by price alone.</p>
+        </article>
+        <article class="feature" data-reveal>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 3h9l3 3v15H6V3Z"/><path d="M9 11h6M9 15h6M9 7h3"/></svg>
+          </span>
+          <span class="feature-tag">Decision brief</span>
+          <h3>Report you can defend</h3>
+          <p>Opportunities, risks, next checks and data gaps, ready to download as Markdown and share with a partner.</p>
+        </article>
+      </section>
+
+      <section class="card how-card" id="how" data-reveal>
+        <div class="how-grid">
+          <div class="how-copy">
+            <p class="eyebrow">How it works</p>
+            <h2>From one search to a decision you can defend.</h2>
+            <p>Enter a product. The agent collects what is publicly available, normalises prices, reads visible reviews and builds a short evidence trail. Nothing is filled in when a marketplace fails.</p>
+            <div class="how-steps">
+              <div class="how-step"><span>01</span><b>Search the market</b><p>Kaspi is scanned live; no other marketplaces are mixed in.</p></div>
+              <div class="how-step"><span>02</span><b>Compare the signals</b><p>Price bands, ratings, seller quality and review themes are compared as separate evidence.</p></div>
+              <div class="how-step"><span>03</span><b>Act with context</b><p>Get three picks, a decision brief and the next checks before you spend money.</p></div>
+            </div>
+          </div>
+          <aside class="report-includes" id="report-contents">
+            <p class="eyebrow">Inside the report</p>
+            <ul class="report-list">
+              <li>Executive summary</li>
+              <li>Price landscape and Kaspi view</li>
+              <li>Best budget, mid-range and premium picks</li>
+              <li>Review themes, quotes and sample size</li>
+              <li>Competitor weaknesses from feedback</li>
+              <li class="warn">Missing data and limitations</li>
+            </ul>
+            <div class="live-badge" id="coverage-facts"><i></i><span>Kaspi live · public search only</span></div>
+          </aside>
+        </div>
+      </section>
+
+  <section id="progress" class="card" hidden>
+    <span class="spinner"></span><span id="progress-text">Collecting data…</span>
+  </section>
+
+  <section id="error" class="card error" hidden></section>
+
+  <section id="results" hidden>
+    <section class="card report-head" id="report-head">
+      <div class="report-top">
+        <div>
+          <p class="eyebrow">Market analysis</p>
+          <h2 id="result-title"></h2>
+          <p class="report-sub" id="result-sub"></p>
+        </div>
+        <div class="report-actions">
+          <button type="button" id="download-md" class="secondary">Download .md</button>
+          <button type="button" id="try-another" class="secondary">New search →</button>
+        </div>
+      </div>
+      <div id="status" class="status" style="margin-top:14px;"></div>
+      <div id="coverage-warning" class="note" hidden style="margin-top:10px;"></div>
+    </section>
+
+    <section class="card" id="stats-section">
+      <div class="section-head">
+        <div><p class="eyebrow">Price evidence</p><h2>Price landscape</h2><p>Asking prices at collection time; bundles may not be directly comparable.</p></div>
+        <span class="status-pill" id="price-badge"></span>
+      </div>
+      <div id="stats"></div>
+      <div id="stats-note" class="hint"></div>
+      <div id="anomaly-prices" class="anomaly-box" hidden>
+        <div class="anomaly-head"><span>Anomaly prices</span><span class="status-pill warn" id="anomaly-count"></span></div>
+        <p>Ridiculously cheap offers, below the normal budget level. They are named here and left out of the recommendations.</p>
+        <div id="anomaly-list"></div>
+      </div>
+    </section>
+
+    <section class="card" id="picks-section">
+      <div class="section-head">
+        <div><p class="eyebrow">Recommendations</p><h2>Three best options</h2><p>Ranked by price position, rating and review depth — not by lowest price alone.</p></div>
+        <span class="status-pill" id="picks-badge"></span>
+      </div>
+      <div id="picks" class="picks"></div>
+      <div id="picks-note" class="hint"></div>
+    </section>
+
+    <section class="card" id="insight-section" hidden>
+      <div class="section-head"><div><p class="eyebrow">What this means</p><h2>Actionable insights</h2></div></div>
+      <div id="insights" class="insight-grid"></div>
+    </section>
+
+    <section class="card" id="improvements-section" hidden>
+      <div class="section-head">
+        <div><p class="eyebrow">From customer feedback</p><h2>Products behind the feedback</h2>
+          <p>Photos, price, rating and review depth for the products whose reviews were read — the same evidence shown in Recommendations.</p></div>
+        <span class="status-pill" id="improvements-confidence"></span>
+      </div>
+      <div id="feedback-products" class="feedback-products"></div>
+      <div id="improvements" class="improvements"></div>
+      <p class="hint" style="margin:10px 0 0;">Recurring complaints are keyword counts in the visible review sample. Suggested tests are hypotheses, not proven fixes.</p>
+    </section>
+
+    <section class="card" id="comparison-card" hidden>
+      <div class="section-head"><div><p class="eyebrow">Side by side</p><h2>Compare the three picks</h2></div></div>
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Product</th><th>Marketplace</th><th class="num">Price</th><th class="num">Rating</th><th class="num">Reviews</th><th>Why it wins</th><th>Watch out</th><th></th></tr></thead>
+          <tbody id="comparison-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <details class="card details-card" id="brief-card" hidden>
+      <summary>
+        <span class="summary-label"><span class="eyebrow" style="margin:0;">Evidence</span>Full decision brief</span>
+        <small>Readiness checks and the complete written analysis</small>
+      </summary>
+      <div class="details-body">
+        <div id="readiness" class="checks"></div>
+        <p id="readiness-text" class="readiness"></p>
+        <div id="brief" class="brief-grid"></div>
+      </div>
+    </details>
+
+    <details class="card details-card" id="offers-section">
+      <summary>
+        <span class="summary-label"><span class="eyebrow" style="margin:0;">Full dataset</span>Offers collected</span>
+        <small id="offers-count"></small>
+      </summary>
+      <div class="details-body table-wrap">
+        <table>
+          <thead><tr><th></th><th>Marketplace</th><th>Product</th><th class="num">Price</th><th class="num">Rating</th><th class="num">Reviews</th><th>Link</th></tr></thead>
+          <tbody id="offers"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card details-card" id="sources-card">
+      <summary>
+        <span class="summary-label"><span class="eyebrow" style="margin:0;">Data sources</span>Collection status</span>
+        <small>What was live, imported or unavailable</small>
+      </summary>
+      <div class="details-body">
+        <div id="sources" class="sources"></div>
+        <div id="coverage" class="hint" style="margin-top:10px;"></div>
+      </div>
+    </details>
+
+    <details class="card details-card" id="limits-section">
+      <summary>
+        <span class="summary-label"><span class="eyebrow" style="margin:0;">Read this before deciding</span>Limitations and data gaps</span>
+      </summary>
+      <div class="details-body">
+        <ul id="limits" class="hint" style="margin:0;padding-left:18px;"></ul>
+      </div>
+    </details>
+  </section>
+
+  <footer class="footer">
+    <span><b>Business AI Agent</b> · Evidence-based market research</span>
+    <span>No invented reviews, prices or market statistics.</span>
+  </footer>
+    </main>
+  </div>
+</div>
+<button type="button" class="back-top" id="back-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>
+</button>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => (n === null || n === undefined || n === "") ? "—" :
+  Number(n).toLocaleString("ru-RU") + " ₸";
+const countFmt = (n) => (n === null || n === undefined || n === "") ? "0" :
+  Number(n).toLocaleString("ru-RU");
+const LABEL = { ok: "live", error: "error" };
+const IMPROVEMENT_TESTS = {
+  "Sticky or heavy texture": "Test a lighter texture and compare comfort in use.",
+  "Shade or colour mismatch": "Check shade accuracy in listing photos and descriptions.",
+  "Defects or fast wear": "Audit the batch and inspect returned units before changing the offer.",
+  "Longevity or wear problems": "Test real wear time against the claimed duration.",
+  "Description or photo mismatch": "Align photos and specifications with the delivered item.",
+  "Overall quality disappointment": "Audit quality control before changing price or positioning.",
+  "Packaging damage": "Test stronger packaging and an inner insert.",
+  "Delivery problems": "Review packing and courier handoff timing.",
+  "Lip irritation or dryness": "Check the ingredient list and test a gentler formula.",
+  "Unpleasant smell or taste": "Review fragrance and raw-material batches.",
+  "Too small or little product": "Make size and volume clearer; test a larger pack.",
+  "Wrong item or variant": "Check SKU picking and label accuracy.",
+  "Expensive": "Test a smaller pack, bundle, or a clearer value explanation.",
+};
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function renderStatuses(data) {
+  const box = $("status");
+  box.textContent = "";
+  const state = data.statuses.kaspi || {};
+  const rows = data.coverage.kaspi || 0;
+  const badge = el("span", "badge");
+  const dot = el("span", "dot " + (rows ? "ok" : (state.status === "error" ? "bad" : "warn")));
+  badge.appendChild(dot);
+  badge.appendChild(el("b", null, "Kaspi: "));
+  badge.appendChild(document.createTextNode((LABEL[state.status] || state.status || "unknown") +
+    (rows ? ` · ${rows} offers` : " · no data")));
+  if (state.reason) badge.title = state.reason + (state.note ? "\n" + state.note : "");
+  box.appendChild(badge);
+  $("coverage").textContent = rows
+    ? `${rows} Kaspi offers returned.`
+    : "Kaspi returned no usable offers." +
+      (data.picks && data.picks.status === "ok" ? "" : " Recommendations need at least 3 offers with price and rating.");
+  $("coverage-warning").hidden = true;
+}
+
+function renderSources(data) {
+  const box = $("sources");
+  box.textContent = "";
+  const state = data.statuses.kaspi || {};
+  const rows = data.coverage.kaspi || 0;
+  const card = el("div", "source" + (rows ? "" : " none"));
+  card.appendChild(el("h3", null, "Kaspi"));
+  if (rows) {
+    card.appendChild(el("p", null, rows + " offers · " + (LABEL[state.status] || state.status || "unknown")));
+    card.appendChild(el("p", null, "Live public search on this server"));
+  } else {
+    card.appendChild(el("p", null, "No data in this analysis"));
+    card.appendChild(el("p", null, "Kaspi returned nothing; try another query."));
+  }
+  box.appendChild(card);
+}
+
+let reportData = null;
+
+function renderReport(data) {
+  const report = data.report;
+  const card = $("brief-card");
+  if (!report) {
+    card.hidden = true;
+    reportData = null;
+    return;
+  }
+  reportData = report;
+  card.hidden = false;
+  const readiness = $("readiness");
+  readiness.textContent = "";
+  for (const check of report.readiness.checks) {
+    const node = el("div", "check " + (check.passed ? "ok" : "bad"));
+    node.appendChild(el("b", null, (check.passed ? "✓ " : "! ") + check.label));
+    node.appendChild(document.createTextNode(check.detail));
+    readiness.appendChild(node);
+  }
+  $("readiness-text").textContent = report.readiness.label + " · " +
+    report.readiness.passed + " of " + report.readiness.total + " evidence checks passed.";
+  const box = $("brief");
+  box.textContent = "";
+  const sections = [
+    ["Executive summary", "summary", true],
+    ["Market overview", "market", false],
+    ["Competitor and price evidence", "competition", false],
+    ["Customer feedback evidence", "reviews", false],
+    ["Opportunities to test (hypotheses)", "opportunities", false],
+    ["Risks and limitations", "risks", false],
+    ["Next checks", "next_steps", false],
+  ];
+  for (const [title, key, wide] of sections) {
+    const section = el("section", "brief" + (wide ? " wide" : ""));
+    section.appendChild(el("h3", null, title));
+    const list = el("ul");
+    for (const item of report[key] || []) list.appendChild(el("li", null, item));
+    section.appendChild(list);
+    box.appendChild(section);
+  }
+}
+
+function downloadReport() {
+  if (!reportData || !reportData.markdown) return;
+  const blob = new Blob([reportData.markdown], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "market-report-" + new Date().toISOString().slice(0, 10) + ".md";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const MARKET_LABEL = { kaspi: "Kaspi" };
+
+function marketName(name) {
+  return MARKET_LABEL[String(name || "").toLowerCase()] || (name || "Unknown");
+}
+
+function specList(pick) {
+  const specs = [];
+  const title = String(pick.title || "");
+  const pack = title.match(/(\d+)\s*шт/i);
+  const size = title.match(/(\d+(?:[.,]\d+)?)\s*см/i);
+  if (pack) specs.push(pack[1] + " pcs");
+  else specs.push("pack size not stated");
+  if (size) specs.push(size[1].replace(",", ".") + " cm");
+  if (pick.brand) specs.push(pick.brand);
+  return specs;
+}
+
+function imageBox(pick, className) {
+  const media = el("div", className || "pick-media");
+  const url = pick.image_url || "";
+  if (!url) {
+    const fallback = el("div", "image-fallback");
+    fallback.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>';
+    fallback.appendChild(el("span", null, "No verified image"));
+    media.appendChild(fallback);
+    return media;
+  }
+  const img = el("img");
+  img.src = url;
+  img.alt = pick.title || "Product photo";
+  img.loading = "lazy";
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", () => {
+    media.textContent = "";
+    const fallback = el("div", "image-fallback");
+    fallback.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>';
+    fallback.appendChild(el("span", null, "Image could not load"));
+    media.appendChild(fallback);
+  });
+  media.appendChild(img);
+  return media;
+}
+
+function thumbFor(row) {
+  if (!row.image_url) return el("span", "thumb");
+  const img = el("img", "thumb");
+  img.src = row.image_url;
+  img.alt = "";
+  img.loading = "lazy";
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", () => { img.style.visibility = "hidden"; });
+  return img;
+}
+
+function tierForPrice(price, tiers) {
+  if (!tiers) return "";
+  for (const tier of ["budget", "mid", "premium"]) {
+    const t = tiers[tier];
+    if (t && price >= Number(t.price_min) && price <= Number(t.price_max)) return tier;
+  }
+  return "";
+}
+
+function renderStats(data) {
+  const rows = data.facts.offers || [];
+  const prices = rows.map((r) => Number(r.price_kzt)).filter((n) => n > 0).sort((a, b) => a - b);
+  const ratings = rows.map((r) => Number(r.rating)).filter((n) => n > 0);
+  const box = $("stats");
+  box.textContent = "";
+  if (!prices.length) {
+    box.appendChild(el("div", "empty", "No prices available."));
+    $("price-badge").textContent = "No price data";
+    return;
+  }
+  const median = prices.length % 2 ? prices[(prices.length - 1) / 2] :
+    (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2;
+  const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
+  const meanRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+  const ra = data.review_analysis;
+  const read = ra && ra.reviews_analysed ? countFmt(ra.reviews_analysed) : "—";
+  const kpi = (label, value, note) => {
+    const card = el("div", "kpi");
+    card.appendChild(el("span", null, label));
+    card.appendChild(el("b", null, value));
+    if (note) card.appendChild(el("small", null, note));
+    return card;
+  };
+  const kpis = el("div", "kpi-grid");
+  kpis.appendChild(kpi("Offers", String(rows.length), Object.keys(data.coverage || {}).filter((k) => data.coverage[k]).map(marketName).join(" · ") || "no sources"));
+  kpis.appendChild(kpi("Median price", fmt(median), "middle of collected offers"));
+  kpis.appendChild(kpi("Price range", fmt(prices[0]) + " – " + fmt(prices[prices.length - 1]), "all collected offers"));
+  kpis.appendChild(kpi("Mean rating", meanRating ? meanRating.toFixed(2) + " / 5" : "—", ratings.length + " rated offers"));
+  kpis.appendChild(kpi("Reviews read", read, ra && ra.reviews_analysed ? "visible sample, not all" : "no readable review text"));
+  box.appendChild(kpis);
+  $("price-badge").textContent = rows.length + " offers · " + new Set(rows.map((r) => r.marketplace)).size + " source" + (new Set(rows.map((r) => r.marketplace)).size === 1 ? "" : "s") + " returned data";
+
+  const viz = el("div", "range-viz");
+  const track = el("div", "range-track");
+  const marker = el("span", "range-marker");
+  const min = prices[0];
+  const max = prices[prices.length - 1];
+  const medianPos = max > min ? ((median - min) / (max - min)) * 100 : 50;
+  marker.style.left = Math.max(0, Math.min(100, medianPos)) + "%";
+  marker.title = "Median " + fmt(median);
+  track.appendChild(marker);
+  viz.appendChild(track);
+  const labels = el("div", "range-labels");
+  const rangeLabel = (label, value) => {
+    const node = el("span");
+    node.appendChild(document.createTextNode(label));
+    node.appendChild(el("b", null, value));
+    return node;
+  };
+  labels.appendChild(rangeLabel("Low", fmt(min)));
+  labels.appendChild(rangeLabel("Median", fmt(median)));
+  labels.appendChild(rangeLabel("High", fmt(max)));
+  viz.appendChild(labels);
+  box.appendChild(viz);
+
+  const chart = el("div", "price-chart");
+  const tiers = (data.picks && data.picks.tiers) || {};
+  const sorted = rows.slice().sort((a, b) => a.price_kzt - b.price_kzt);
+  for (const row of sorted) {
+    const tier = tierForPrice(Number(row.price_kzt), tiers);
+    const line = el("div", "price-row" + (tier ? " tier-" + tier : ""));
+    line.title = `${row.title} · ${fmt(row.price_kzt)}`;
+    line.appendChild(el("span", "price-name", row.title || "Offer"));
+    const bar = el("div", "price-track");
+    const fill = el("span", "price-fill");
+    fill.style.width = Math.max(3, (Number(row.price_kzt) / max) * 100) + "%";
+    bar.appendChild(fill);
+    line.appendChild(bar);
+    line.appendChild(el("span", "price-val", fmt(row.price_kzt)));
+    chart.appendChild(line);
+  }
+  box.appendChild(chart);
+  const legend = el("div", "tier-legend");
+  const colors = { budget: "var(--ok)", mid: "#8bb4ff", premium: "#e0a1ff" };
+  for (const tier of ["budget", "mid", "premium"]) {
+    if (!tiers[tier]) continue;
+    const item = el("span");
+    const dot = el("i");
+    dot.style.background = colors[tier];
+    item.appendChild(dot);
+    const tierData = tiers[tier];
+    const priceRange = fmt(tierData.price_min) === fmt(tierData.price_max)
+      ? fmt(tierData.price_min)
+      : fmt(tierData.price_min) + " – " + fmt(tierData.price_max);
+    const offerCount = tierData.offers === 1 ? "1 offer" : tierData.offers + " offers";
+    item.appendChild(document.createTextNode(
+      tier[0].toUpperCase() + tier.slice(1) + ": " + priceRange + " (" + offerCount + ")"
+    ));
+    legend.appendChild(item);
+  }
+  box.appendChild(legend);
+  let reviewNote = "Prices in tenge, as shown by the marketplace at collection time.";
+  if (ra && ra.status === "ok" && ra.reviews_analysed) {
+    reviewNote += ` Review text was read for the recommendations: ${ra.reviews_analysed} reviews from ${ra.checked.length} product page(s). This is a visible sample, not a census.`;
+  } else {
+    reviewNote += " Review text was checked but not readable for the selected products; ratings and review counts are not treated as text analysis.";
+  }
+  $("stats-note").textContent = reviewNote;
+}
+
+function reviewProductFor(pick, data) {
+  const products = (data.review_analysis && data.review_analysis.products) || [];
+  return products.find((product) => product.status === "ok" && product.url === pick.url) || null;
+}
+
+function addReviewTags(card, label, items, cls) {
+  if (!items || !items.length) return;
+  card.appendChild(el("span", "tag-label", label));
+  const row = el("div", "review-tags");
+  for (const item of items.slice(0, 3)) row.appendChild(el("span", "tag " + cls, item));
+  card.appendChild(row);
+}
+
+function addSentiment(card, pick, data) {
+  const product = reviewProductFor(pick, data);
+  if (!product || !product.analysed) return;
+  const positive = Number(product.positive) || 0;
+  const negative = Number(product.negative) || 0;
+  const total = Number(product.analysed) || 0;
+  if (!total) return;
+  const posPct = Math.round((positive / total) * 100);
+  const negPct = Math.max(0, 100 - posPct);
+  const wrap = el("div", "sentiment");
+  const head = el("div", "sentiment-head");
+  head.appendChild(el("span", null, "Review sentiment"));
+  head.appendChild(el("span", null, `${total} visible`));
+  wrap.appendChild(head);
+  const track = el("div", "sentiment-track");
+  const pos = el("span", "sentiment-fill pos");
+  pos.style.width = posPct + "%";
+  const neg = el("span", "sentiment-fill neg");
+  neg.style.width = negPct + "%";
+  track.appendChild(pos);
+  track.appendChild(neg);
+  wrap.appendChild(track);
+  const legend = el("div", "sentiment-legend");
+  const posLabel = el("span");
+  posLabel.appendChild(el("i"));
+  posLabel.appendChild(document.createTextNode(`Positive 4–5★ · ${positive}`));
+  const negLabel = el("span", "neg");
+  negLabel.appendChild(el("i"));
+  negLabel.appendChild(document.createTextNode(`Critical 1–3★ · ${negative}`));
+  legend.appendChild(posLabel);
+  legend.appendChild(negLabel);
+  wrap.appendChild(legend);
+  card.appendChild(wrap);
+}
+
+function renderAnomalies(data) {
+  const box = $("anomaly-prices");
+  const list = $("anomaly-list");
+  const count = $("anomaly-count");
+  const anomalies = (data.picks && data.picks.anomaly_prices) || [];
+  list.textContent = "";
+  box.hidden = !anomalies.length;
+  if (!anomalies.length) return;
+  count.textContent = anomalies.length + " named";
+  for (const item of anomalies) {
+    const row = el("div", "anomaly-row");
+    const main = el("div", "anomaly-main");
+    const name = item.url ? el("a", "anomaly-name", item.title || "Listing") : el("div", "anomaly-name", item.title || "Listing");
+    if (item.url) {
+      name.href = item.url;
+      name.target = "_blank";
+      name.rel = "noopener";
+    }
+    main.appendChild(name);
+    if (item.reason) main.appendChild(el("div", "anomaly-reason", item.reason));
+    row.appendChild(main);
+    row.appendChild(el("span", "anomaly-price", fmt(item.price_kzt)));
+    list.appendChild(row);
+  }
+}
+
+function renderPicks(data) {
+  const box = $("picks");
+  const badge = $("picks-badge");
+  box.textContent = "";
+  const result = data.picks || {};
+  if (result.status !== "ok") {
+    badge.className = "status-pill warn";
+    badge.textContent = "Not enough data";
+    box.appendChild(el("div", "empty", result.reason || "Not enough offers with price and rating."));
+    $("picks-note").textContent = "";
+    return;
+  }
+  badge.className = "status-pill ok";
+  const shownPicks = premiumOnly
+    ? result.picks.filter((p) => p.tier === "premium")
+    : result.picks;
+  badge.textContent = premiumOnly ? "Best premium pick" : shownPicks.length + " picks";
+  for (const pick of shownPicks) {
+    const card = el("div", "pick" + (pick.tier ? " tier-" + pick.tier : ""));
+    card.appendChild(imageBox(pick, "pick-media"));
+    const body = el("div", "pick-body");
+    const head = el("div", "pick-head");
+    head.appendChild(el("span", "pick-badge", pick.role || pick.tier || "Recommendation"));
+    head.appendChild(el("span", "market-tag", marketName(pick.marketplace)));
+    if (pick.brand_match) head.appendChild(el("span", "market-tag", pick.brand_match));
+    body.appendChild(head);
+    body.appendChild(el("h3", "name", pick.title));
+    const priceRow = el("div", "pick-price-row");
+    priceRow.appendChild(el("div", "price", fmt(pick.price_kzt)));
+    priceRow.appendChild(el("span", "tiny", pick.value_for_money ? "value: " + pick.value_for_money : ""));
+    body.appendChild(priceRow);
+    const stats = el("div", "pick-stats");
+    const stat = (label, value) => {
+      const node = el("span");
+      node.appendChild(el("b", null, value));
+      node.appendChild(document.createTextNode(" " + label));
+      return node;
+    };
+    stats.appendChild(stat("rating", pick.rating ? pick.rating + "/5" : "—"));
+    stats.appendChild(stat("reviews", countFmt(pick.reviews_count)));
+    if (pick.confidence) stats.appendChild(stat("confidence", pick.confidence));
+    if (pick.seller) {
+      const seller = el("div", "tiny", "Seller: " + pick.seller +
+        (pick.seller_rating ? " · rating " + pick.seller_rating + "/5" : "") +
+        (pick.seller_reviews ? " · " + countFmt(pick.seller_reviews) + " reviews" : ""));
+      body.appendChild(seller);
+    }
+    if (pick.price_flag) body.appendChild(el("div", "tiny", "Anomaly price: " + pick.price_flag));
+    body.appendChild(stats);
+    const specs = el("div", "spec-row");
+    for (const spec of specList(pick)) specs.appendChild(el("span", "spec", spec));
+    body.appendChild(specs);
+    if (pick.summary) body.appendChild(el("p", "pick-summary", pick.summary));
+    const pc = el("div", "pros-cons");
+    const pros = el("div");
+    pros.appendChild(el("h4", null, "Why it won"));
+    const proList = el("ul");
+    for (const a of (pick.advantages || []).slice(0, 2)) proList.appendChild(el("li", null, a));
+    if (!proList.children.length) proList.appendChild(el("li", null, "No verified advantage in this sample."));
+    pros.appendChild(proList);
+    const cons = el("div", "cons");
+    cons.appendChild(el("h4", null, "Watch out"));
+    const conList = el("ul");
+    for (const d of (pick.disadvantages || []).slice(0, 2)) conList.appendChild(el("li", null, d));
+    if (!conList.children.length) conList.appendChild(el("li", null, "No verified drawback in this sample."));
+    cons.appendChild(conList);
+    pc.appendChild(pros);
+    pc.appendChild(cons);
+    body.appendChild(pc);
+    const details = document.createElement("details");
+    details.className = "pick-more";
+    const detailsLabel = document.createElement("summary");
+    detailsLabel.textContent = "Review evidence and full reason";
+    details.appendChild(detailsLabel);
+    addSentiment(details, pick, data);
+    addReviewTags(details, "Praised in visible reviews", pick.review_advantages, "pos");
+    addReviewTags(details, "Complaints in visible reviews", pick.review_disadvantages, "neg");
+    if (pick.recommendation_reason) details.appendChild(el("div", "why", "Full reason: " + pick.recommendation_reason));
+    if (pick.category_note) details.appendChild(el("div", "tiny", pick.category_note));
+    if (pick.authenticity) details.appendChild(el("div", "tiny", "Authenticity: " + pick.authenticity));
+    body.appendChild(details);
+    if ((pick.also_considered || []).length) {
+      const more = document.createElement("details");
+      more.className = "pick-more";
+      const moreLabel = document.createElement("summary");
+      moreLabel.textContent = "More good options in this price band";
+      more.appendChild(moreLabel);
+      const list = el("div", "alt-options");
+      for (const alt of pick.also_considered) {
+        const row = el("div", "alt-row");
+        row.appendChild(el("span", "alt-title", alt.title || "—"));
+        row.appendChild(el("span", "alt-meta", fmt(alt.price_kzt) +
+          (alt.rating ? " · " + alt.rating + "/5" : "") +
+          (alt.reviews_count ? " · " + countFmt(alt.reviews_count) + " reviews" : "")));
+        list.appendChild(row);
+      }
+      more.appendChild(list);
+      body.appendChild(more);
+    }
+    const actions = el("div", "pick-actions");
+    if (pick.url) {
+      const a = el("a", null, "Open listing ↗");
+      a.href = pick.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      actions.appendChild(a);
+    } else {
+      actions.appendChild(el("span", "tiny", "No public link"));
+    }
+    if (pick.review_evidence && pick.review_evidence.review_examples && pick.review_evidence.review_examples.length) {
+      actions.appendChild(el("span", "tiny", pick.review_evidence.review_examples.length + " review quote(s)"));
+    }
+    body.appendChild(actions);
+    card.appendChild(body);
+    box.appendChild(card);
+  }
+  const note = (result.note || "").trim();
+  const filterNote = result.filtered_out
+    ? result.filtered_out + " unrelated offer(s) were excluded before ranking. "
+    : "";
+  const modeNote = premiumOnly ? "Showing only the Best premium pick. " : "";
+  const floor = result.quality_floor || {};
+  const floorText = floor.min_rating
+    ? `offers with ${floor.min_rating}+ rating and ${floor.min_reviews}+ reviews`
+    : "offers that passed the quality floor";
+  const detailNote = premiumOnly
+    ? `Chosen from the top 20% by price among ${floorText}. `
+    : filterNote + (note ? note.replace(/[.!?]+$/, "") + ". " : "");
+  $("picks-note").textContent = modeNote + detailNote +
+    "Advantages and disadvantages are computed from collected price, rating and review-count data. Review themes are keyword counts in the visible sample.";
+}
+
+function renderInsights(data) {
+  const section = $("insight-section");
+  const box = $("insights");
+  box.textContent = "";
+  section.hidden = false;
+  const add = (label, title, text) => {
+    const card = el("div", "insight-card");
+    card.appendChild(el("span", null, label));
+    card.appendChild(el("h3", null, title));
+    card.appendChild(el("p", null, text));
+    box.appendChild(card);
+  };
+  const tiers = (data.picks && data.picks.tiers) || {};
+  if (tiers.budget && tiers.mid && tiers.premium) {
+    add("Price position", "Three price bands are visible",
+      `Budget median ${fmt(tiers.budget.price_median)}, mid ${fmt(tiers.mid.price_median)}, premium ${fmt(tiers.premium.price_median)}. ` +
+      "Choose a band by target customer, not by the lowest number alone.");
+  } else {
+    add("Price position", "Not enough price bands", "Too few priced offers to split the market into budget, mid and premium bands.");
+  }
+  const products = ((data.review_analysis && data.review_analysis.products) || []).filter((p) => p.status === "ok");
+  const themes = [];
+  for (const product of products) {
+    for (const theme of product.themes_negative || []) {
+      if ((Number(theme.count) || 0) >= 2) themes.push({ ...theme, product });
+    }
+  }
+  themes.sort((a, b) => (Number(b.share) || 0) - (Number(a.share) || 0));
+  if (themes.length) {
+    const top = themes[0];
+    add("Customer pain", "Recurring complaint: " + top.theme,
+      `${top.count} of ${top.product.analysed} visible reviews${top.share !== undefined && top.share !== null ? " (" + top.share + "%)" : ""}. ` +
+      "Treat this as a test target: inspect the product or ask the supplier before ordering a batch.");
+  } else {
+    add("Customer pain", "No recurring complaint found",
+      products.length ? "No negative theme repeats in the visible sample. Read more review pages before assuming quality is safe."
+        : "Review text was not readable, so customer pain cannot be assessed.");
+  }
+  const steps = (data.report && data.report.next_steps) || [];
+  if (steps.length) {
+    add("Next action", "Verify before buying", steps[0]);
+  } else if (data.picks && data.picks.picks && data.picks.picks.length) {
+    add("Next action", "Verify the winning listing", "Open the best-value listing and check photos, size, bundle and seller before ordering a test batch.");
+  } else {
+    add("Next action", "Collect more data", "Add offers with both price and rating, then run the analysis again.");
+  }
+}
+
+function renderImprovements(data) {
+  const card = $("improvements-section");
+  const box = $("improvements");
+  const productBox = $("feedback-products");
+  const badge = $("improvements-confidence");
+  box.textContent = "";
+  productBox.textContent = "";
+  badge.textContent = "";
+  const products = ((data.review_analysis && data.review_analysis.products) || [])
+    .filter((product) => product.status === "ok");
+  if (!products.length) {
+    card.hidden = false;
+    badge.className = "status-pill warn";
+    badge.textContent = "No readable review text";
+    productBox.appendChild(el("div", "empty",
+      "Review text was not readable, so improvement opportunities cannot be assessed from feedback."));
+    return;
+  }
+  for (const product of products) {
+    const pick = ((data.picks && data.picks.picks) || []).find((p) => p.url === product.url);
+    const info = pick || {
+      title: product.title,
+      url: product.url,
+      image_url: product.image_url,
+      seller: product.seller,
+      seller_rating: product.seller_rating,
+      seller_reviews: product.seller_reviews,
+      reviews_count: product.total_reviews,
+    };
+    const card = el("div", "feedback-product");
+    card.appendChild(imageBox(info, "feedback-media"));
+    const body = el("div", "feedback-body");
+    body.appendChild(el("div", "feedback-role", pick ? (pick.role || pick.tier || "Recommendation") : "Reviewed product"));
+    body.appendChild(el("div", "feedback-title", product.title || "Product"));
+    if (pick) body.appendChild(el("div", "feedback-price", fmt(pick.price_kzt)));
+    const meta = [];
+    if (pick && pick.rating) meta.push(pick.rating + "/5");
+    if (product.analysed) meta.push(`${product.analysed} reviews read`);
+    if (product.total_reviews) meta.push(`${countFmt(product.total_reviews)} total`);
+    if (meta.length) body.appendChild(el("div", "feedback-meta", meta.join(" · ")));
+    if (product.seller) {
+      body.appendChild(el("div", "feedback-seller", "Seller: " + product.seller +
+        (product.seller_rating ? " · " + product.seller_rating + "/5" : "")));
+    }
+    card.appendChild(body);
+    productBox.appendChild(card);
+  }
+  const rows = [];
+  for (const product of products) {
+    for (const theme of product.themes_negative || []) {
+      if ((Number(theme.count) || 0) >= 2) {
+        rows.push({
+          product: product.title || "Product",
+          theme: theme.theme,
+          count: Number(theme.count) || 0,
+          analysed: Number(product.analysed) || 0,
+          share: theme.share_pct,
+          action: IMPROVEMENT_TESTS[theme.theme] || "Investigate this recurring complaint in the next batch.",
+        });
+      }
+    }
+  }
+  rows.sort((a, b) => (Number(b.share) || 0) - (Number(a.share) || 0));
+  card.hidden = false;
+  if (!rows.length) {
+    badge.className = "status-pill ok";
+    badge.textContent = "No recurring complaint";
+    box.appendChild(el("div", "empty",
+      "No recurring complaint appears in this visible sample. No improvement opportunity can be supported yet; read more review pages first."));
+    return;
+  }
+  badge.className = "status-pill warn";
+  badge.textContent = rows.length + " recurring theme" + (rows.length === 1 ? "" : "s");
+  for (const row of rows.slice(0, 6)) {
+    const node = el("div", "improvement");
+    node.appendChild(el("div", "product", row.product));
+    node.appendChild(el("h3", null, row.theme));
+    node.appendChild(el("p", null, "Test: " + row.action));
+    const frequency = row.share === null || row.share === undefined
+      ? `${row.count}/${row.analysed} reviews`
+      : `${row.count}/${row.analysed} reviews · ${row.share}%`;
+    node.appendChild(el("span", "freq", frequency));
+    box.appendChild(node);
+  }
+}
+
+function renderComparison(data) {
+  const card = $("comparison-card");
+  const body = $("comparison-rows");
+  body.textContent = "";
+  const picks = ((data.picks && data.picks.picks) || []);
+  if (!picks.length) {
+    card.hidden = true;
+    return;
+  }
+  card.hidden = false;
+  for (const pick of picks) {
+    const tr = el("tr");
+    const product = el("td");
+    const wrap = el("div", "compare-product");
+    wrap.appendChild(thumbFor(pick));
+    wrap.appendChild(el("span", null, pick.title));
+    product.appendChild(wrap);
+    tr.appendChild(product);
+    tr.appendChild(el("td", null, marketName(pick.marketplace)));
+    tr.appendChild(el("td", "num", fmt(pick.price_kzt)));
+    tr.appendChild(el("td", "num", pick.rating ? pick.rating + "/5" : "—"));
+    tr.appendChild(el("td", "num", pick.reviews_count === "" ? "—" : countFmt(pick.reviews_count)));
+    tr.appendChild(el("td", null, (pick.advantages || [])[0] || "—"));
+    tr.appendChild(el("td", null, (pick.disadvantages || [])[0] || "—"));
+    const link = el("td");
+    if (pick.url) {
+      const a = el("a", null, "open");
+      a.href = pick.url; a.target = "_blank"; a.rel = "noopener";
+      link.appendChild(a);
+    } else {
+      link.textContent = "—";
+    }
+    tr.appendChild(link);
+    body.appendChild(tr);
+  }
+}
+
+function renderOffers(data) {
+  const body = $("offers");
+  body.textContent = "";
+  const rows = (data.facts.offers || []).slice().sort((a, b) => a.price_kzt - b.price_kzt);
+  $("offers-count").textContent = rows.length + " offer" + (rows.length === 1 ? "" : "s") + " · sorted by price";
+  for (const row of rows) {
+    const tr = el("tr");
+    tr.appendChild(thumbFor(row));
+    const marketCell = el("td");
+    marketCell.appendChild(el("span", "tag", marketName(row.marketplace)));
+    tr.appendChild(marketCell);
+    const productCell = el("td");
+    const wrap = el("div", "offer-product");
+    wrap.appendChild(el("span", null, row.title));
+    productCell.appendChild(wrap);
+    tr.appendChild(productCell);
+    tr.appendChild(el("td", "num", fmt(row.price_kzt)));
+    tr.appendChild(el("td", "num", row.rating || "—"));
+    tr.appendChild(el("td", "num", row.reviews_count === "" ? "—" : countFmt(row.reviews_count)));
+    const td = el("td");
+    if (row.url) {
+      const a = el("a", null, "link");
+      a.href = row.url; a.target = "_blank"; a.rel = "noopener";
+      td.appendChild(a);
+    } else {
+      td.textContent = "—";
+    }
+    tr.appendChild(td);
+    body.appendChild(tr);
+  }
+}
+
+function renderLimits(data) {
+  const list = $("limits");
+  list.textContent = "";
+  const items = [
+    "Only fields returned by the marketplace are used: name, price, rating, review count, link.",
+    "Seller costs, commissions and sales volumes are unknown, so no profit estimate is given.",
+  ];
+  const ra = data.review_analysis;
+  if (ra && ra.status === "ok" && ra.reviews_analysed) {
+    items.push(`Review text: ${ra.reviews_analysed} visible reviews read from ${ra.checked.length} Kaspi product page(s); themes are keyword counts within positive and negative reviews, not a full-text census.`);
+    items.push("Review samples are visible slices of the review pages, not a random sample of all buyers.");
+  } else {
+    const checked = (ra && ra.checked) ? ra.checked.length : 0;
+    items.push(`Review text: checked ${checked} Kaspi product page(s); no readable review text was found. ` +
+      ((ra && ra.reason) || "Ratings and review counts are not presented as review-text analysis."));
+  }
+  for (const text of items) list.appendChild(el("li", null, text));
+}
+
+let premiumOnly = false;
+
+async function run(query) {
+  $("error").hidden = true;
+  $("error").className = "error";
+  $("results").hidden = true;
+  $("nav-results").hidden = true;
+  $("improvements-section").hidden = true;
+  $("improvements").textContent = "";
+  $("insight-section").hidden = true;
+  $("comparison-card").hidden = true;
+  $("stats").textContent = "";
+  $("anomaly-prices").hidden = true;
+  $("anomaly-list").textContent = "";
+  $("picks").textContent = "";
+  $("picks-badge").textContent = "";
+  $("price-badge").textContent = "";
+  $("progress").hidden = false;
+  $("run").disabled = true;
+  $("progress-text").textContent = "Searching Kaspi…";
+  try {
+    const response = await fetch("api/analyze?q=" + encodeURIComponent(query));
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const data = await response.json();
+    $("progress").hidden = true;
+    $("results").hidden = false;
+    $("nav-results").hidden = false;
+    const offerRows = (data.facts && data.facts.offers) || [];
+    const coverageRows = data.raw_coverage || data.coverage || {};
+    const collected = Object.values(coverageRows).reduce((sum, n) => sum + (Number(n) || 0), 0);
+    const filtered = (data.picks && Number(data.picks.filtered_out)) || 0;
+    const activeMarkets = Object.keys(coverageRows).filter((name) => coverageRows[name]);
+    $("result-title").textContent = `“${data.query}”`;
+    $("result-sub").textContent = `${collected} offer${collected === 1 ? "" : "s"} collected` +
+      (filtered ? ` · ${filtered} unrelated excluded` : "") + " · " +
+      (activeMarkets.length ? "Kaspi data" : "Kaspi returned no data") +
+      (data.stamp ? " · collected " + data.stamp : "");
+    if (!data.ok) {
+      const explain = data.picks && ["no_relevant", "insufficient_relevant", "insufficient_data", "insufficient_quality", "insufficient_distinct"].includes(data.picks.status);
+      $("error").className = explain ? "info" : "error";
+      $("status").textContent = "";
+      $("error").hidden = false;
+      $("error").textContent = data.message;
+      renderStatuses(data);
+      renderSources(data);
+      renderAnomalies(data);
+      $("stats").textContent = ""; $("picks").textContent = "";
+      renderReport(data);
+          return;
+    }
+    renderStatuses(data);
+    renderSources(data);
+    renderReport(data);
+    renderStats(data);
+    renderAnomalies(data);
+    renderPicks(data);
+    renderInsights(data);
+    renderImprovements(data);
+    renderComparison(data);
+    renderOffers(data);
+    renderLimits(data);
+    $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    $("progress").hidden = true;
+    $("error").hidden = false;
+    $("error").textContent = String(error.message || error);
+  } finally {
+    $("run").disabled = false;
+  }
+}
+
+$("download-md").addEventListener("click", downloadReport);
+$("try-another").addEventListener("click", () => {
+  document.getElementById("search").scrollIntoView({ behavior: "smooth", block: "center" });
+  $("query").focus();
+  $("query").select();
+});
+
+$("search").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = $("query").value.trim();
+  if (!query) return;
+  premiumOnly = $("premium-only").checked;
+  run(query);
+});
+for (const chip of document.querySelectorAll(".chip")) {
+  chip.addEventListener("click", () => {
+    $("query").value = chip.dataset.query || "";
+    if ($("run").disabled) return;
+    $("premium-only").checked = chip.dataset.premium === "1";
+    if ($("query").value.trim()) $("search").requestSubmit();
+  });
+}
+
+const backTop = $("back-top");
+const navItems = Array.from(document.querySelectorAll(".nav a[data-nav]"));
+const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function syncNav() {
+  if (window.scrollY < 160) {
+    for (const link of navItems) link.classList.toggle("active", link.dataset.nav === "top");
+    return;
+  }
+  let current = navItems[0];
+  let bestOffset = -Infinity;
+  for (const link of navItems) {
+    if (link.hidden) continue;
+    const target = document.getElementById(link.dataset.nav);
+    if (!target) continue;
+    const offset = target.getBoundingClientRect().top;
+    if (offset <= 150 && offset > bestOffset) {
+      bestOffset = offset;
+      current = link;
+    }
+  }
+  for (const link of navItems) link.classList.toggle("active", link === current);
+}
+
+function syncBackTop() {
+  backTop.classList.toggle("show", window.scrollY > 620);
+}
+
+window.addEventListener("scroll", () => {
+  window.requestAnimationFrame(() => { syncNav(); syncBackTop(); });
+}, { passive: true });
+backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }));
+
+if (reduceMotion || !("IntersectionObserver" in window)) {
+  for (const item of revealItems) item.classList.add("is-visible");
+} else {
+  const revealObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add("is-visible");
+      revealObserver.unobserve(entry.target);
+    }
+  }, { threshold: 0.12, rootMargin: "0px 0px -40px" });
+  for (const item of revealItems) revealObserver.observe(item);
+}
+syncNav();
+syncBackTop();
+</script>
+</body>
+</html>

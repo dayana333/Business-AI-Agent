@@ -1,0 +1,119 @@
+{
+ "query": "hoodie",
+ "checked_at": "2026-10-30T11:38:11",
+ "rows_total": 12,
+ "base_products": 10,
+ "marketplaces": {
+  "kaspi": {
+   "availability": "available",
+   "status": "ok",
+   "rows": 12,
+   "reason": "",
+   "note": "",
+   "auth": "not required",
+   "route": "public search page in headless Chrome (TOOLS/kaspi_search.mjs)",
+   "evidence": "",
+   "checked_at": "2026-10-30T11:38:04"
+  }
+ },
+ "products": [
+  {
+   "key": "худи",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "черный"
+   ]
+  },
+  {
+   "key": "худи medani однотонный",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 3,
+   "variants": [
+    "черный",
+    "синий",
+    "белый"
+   ]
+  },
+  {
+   "key": "худи danial brand",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "черный"
+   ]
+  },
+  {
+   "key": "худи medani",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "серый"
+   ]
+  },
+  {
+   "key": "худи danial brand однотонный",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "черный"
+   ]
+  },
+  {
+   "key": "худи medani однотонный бордовый",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": []
+  },
+  {
+   "key": "худи принтованный",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "черный"
+   ]
+  },
+  {
+   "key": "худи urban outfit однотонный",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "черный"
+   ]
+  },
+  {
+   "key": "худи однотонный бордовый",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": []
+  },
+  {
+   "key": "худи mb однотонный серебристый",
+   "marketplaces": [
+    "kaspi"
+   ],
+   "offers": 1,
+   "variants": [
+    "серый"
+   ]
+  }
+ ]
+}
